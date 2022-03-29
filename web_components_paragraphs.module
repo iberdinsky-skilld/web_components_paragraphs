@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Web Components Paragraphs module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\field\FieldStorageConfigInterface;
+use Drupal\paragraphs\Entity\ParagraphsType;
+use Drupal\paragraphs\MigrationPluginsAlterer;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Entity\EntityTypeInterface;
+
+ /**
+ * Implements hook_theme().
+ */
+function web_components_paragraphs_theme() {
+  return array(
+    'web_components_paragraphs' => array(
+      'render element' => 'elements',
+      'template' => 'web-components-paragraphs',
+    ),
+  );
+}
+
+/**
+ * Prepares variables for paragraph templates.
+ *
+ * Default template: paragraph.html.twig.
+ *
+ * Most themes use their own copy of paragraph.html.twig. The default is located
+ * inside "templates/paragraph.html.twig". Look in there for the
+ * full list of variables.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An array of elements to display in view mode.
+ *   - paragraph: The paragraph object.
+ *   - view_mode: View mode; e.g., 'full', 'teaser'...
+ */
+function web_components_paragraphs_preprocess_web_components_paragraphs(&$variables) {
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+  $variables['paragraph'] = $variables['elements']['#paragraph'];
+
+  // Helpful $content variable for templates.
+  $variables += array('content' => array());
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+    $variables['content'][$key]['#attributes']['slot'] = $key;
+  }
+
+  $paragraph_type = $variables['elements']['#paragraph']->getParagraphType();
+  foreach ($paragraph_type->getEnabledBehaviorPlugins() as $plugin_value) {
+    $plugin_value->preprocess($variables);
+  }
+
+}
