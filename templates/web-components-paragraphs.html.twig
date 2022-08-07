@@ -38,6 +38,9 @@
  * @ingroup themeable
  */
 #}
+
+{{ attach_library('web_components_paragraphs/web_components_paragraphs') }}
+
 {%
   set classes = [
     'paragraph',
@@ -47,43 +50,10 @@
   ]
 %}
 
-<template id="tmpl">
-  <style>
-    h2 {
-      font-family: sans-serif;
-      color: blue;
-    }
+{% set card_attributes = create_attribute() %}
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-    }
-
-    a {
-      color: pink;
-      font-weight: 700;
-    }
-  </style>
-  <h2><slot name="field_title"></slot></h2>
-  <div class="grid">
-    <div>
-      <slot name="field_body"></slot>
-      <slot name="field_link"></slot>
-    </div>
-    <slot name="field_image"></slot>
-  </div>
-  <slot></slot>
-</template>
-
-<script>
-customElements.define('web-component-paragraph', class extends HTMLElement {
-  connectedCallback() {
-    this.attachShadow({mode: 'open'}).append(tmpl.content.cloneNode(true));
-  }
-});
-</script>
-
-<web-component-paragraph>
+<gdwc-card-extended
+  {{ attributes.addClass(classes) }}
+  >
   {{ content }}
-</web-component-paragraph>
+</gdwc-card-extended>
